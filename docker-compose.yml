@@ -1,0 +1,45 @@
+version: "3.7"
+
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: myapp-server
+    container_name: myapp-node-server
+    command: /usr/src/app/node_modules/.bin/nodemon server.js
+    volumes:
+      - server-volume:/usr/src/app
+
+    ports:
+      - "3111:3111"
+    # env_file: ./server/.env
+    # environment:
+    #   - NODE_ENV=development
+    networks:
+      - mission6
+
+  client:
+    build:
+      context: ./m6contact
+      dockerfile: Dockerfile
+    image: myapp-client
+    container_name: myapp-react-client
+    command: npm start
+    volumes:
+      - m6contact-volume:/usr/src/app
+    depends_on:
+      - server
+    ports:
+      - "3000:3000"
+    networks:
+      - mission6
+
+networks:
+  mission6:
+    driver: bridge
+
+volumes:
+  server-volume:
+  m6contact-volume:
+    driver: local
